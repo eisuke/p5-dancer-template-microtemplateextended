@@ -1,6 +1,7 @@
 package Dancer::Template::MicroTemplateExtended;
 use strict;
 use warnings;
+use Encode;
 
 use Text::MicroTemplate::Extended;
 use Dancer::FileUtils 'path';
@@ -46,7 +47,13 @@ sub render($$$) {
     $template =~ s/\.tt$//;
     my $file = abs2rel($template, setting('views'));
     $engine->template_args($tokens);
-    return $engine->render($file);
+    my $content = $engine->render($file);
+
+    if( $engine->open_layer eq ':utf8' ) {
+        $content = Encode::encode( 'utf8', $content);
+    }
+
+    return $content;
 }
 
 1;
