@@ -46,7 +46,13 @@ sub render($$$) {
 
     $template =~ s/\.tt$//;
     my $file = abs2rel($template, setting('views'));
-    $engine->template_args($tokens);
+    my $request = delete $tokens->{request};
+    my $params  = delete $tokens->{params};
+    $engine->template_args({
+        args => $tokens,
+        request => $request,
+        params => $params,
+    });
     my $content = $engine->render($file);
 
     if( $engine->open_layer eq ':utf8' ) {
